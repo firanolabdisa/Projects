@@ -1,0 +1,161 @@
+#QUESTION 1:
+ 
+#Import library
+import os
+import csv
+from pathlib import Path
+# Import Dependencies
+import pandas as pd
+import numpy as np
+# Set path to collect data 
+data = os.path.join("Resources", '2019_Winter_Data_Science_Intern_Challenge_Data_Set.csv')
+# Make a reference to the election_data.csv file path
+csv_path = data
+
+# Set the name and path for file to output
+file_to_output = "data_results.txt"
+
+# Import the data set as a DataFrame
+data_df = pd.read_csv(csv_path, encoding="utf-8")
+data_df.head()
+order_id	shop_id	user_id	order_amount	total_items	payment_method	created_at
+0	1	53	746	224	2	cash	2017-03-13 12:36:56
+1	2	92	925	90	1	cash	2017-03-03 17:38:52
+2	3	44	861	144	1	cash	2017-03-14 4:23:56
+3	4	18	935	156	1	credit_card	2017-03-26 12:43:37
+4	5	18	883	156	1	credit_card	2017-03-01 4:35:11
+# Identify columns
+#data_df.columns
+# Identify data info
+#data_df.info()
+# Question 2: What metric would you report for this dataset?
+
+# Reporting metrics: 
+
+# Order Amount (Sum total over the reporting period of March)
+# Total Items (Sum total over the reporting period of March)
+# To determine Average Order Value (AOV)
+
+# First determine respective sums of both 'order_amount' and 'total_items'
+oa_sum = data_df['order_amount'].sum()
+ti_sum = data_df['total_items'].sum()
+print(oa_sum)
+print(ti_sum)
+15725640
+43936
+# Then calculate average by dividing the total order amount (oa_sum) by the total items amount (ti_sum)
+AOV = oa_sum/ti_sum
+AOV
+357.92152221412965
+# Print Average Order Value (AOV) with only 2 decimal places and the dollar sign
+print("%.2f" % AOV)
+357.92
+# Print correct explanation with $
+'${:,.2f}'.format(AOV)
+'$357.92'
+# Incorrect calculation explained as a mistaken count() instead of sum() function
+oa_sum = data_df['order_amount'].sum()
+ti_count = data_df['total_items'].count()
+AOV = oa_sum/ti_count
+print(AOV)
+3145.128
+ 
+ 
+ # question 2
+ 
+ Skip to content
+Search or jump to…
+Pull requests
+Issues
+Marketplace
+Explore
+ 
+@firanolabdisa 
+elsantonato
+/
+Data-Science-Challenge
+Public
+Code
+Issues
+Pull requests
+Actions
+Projects
+Wiki
+Security
+Insights
+Data-Science-Challenge/Data-Science-Intern-Challenge-Question-2.sql
+@elsantonato
+elsantonato updated file
+Latest commit 9377ccf on Sep 8, 2020
+ History
+ 1 contributor
+56 lines (42 sloc)  1.36 KB
+   
+SHOW DATABASES;
+SHOW TABLES;
+
+-- a) How many orders were shipped by Speedy Express in total?
+
+CREATE VIEW Shipper_Orders AS
+SELECT Orders.OrderID, Orders.ShipperID, Shippers.ShipperName
+FROM Orders 
+JOIN Shippers
+ON Shippers.ShipperID=Orders.ShipperID;
+
+SELECT COUNT(*) FROM [Shipper_Orders]
+WHERE ShipperName = 'Speedy Express';
+
+ANSWER: 54
+
+-- b) What is the last name of the employee with the most orders? 
+
+CREATE VIEW Employee_Orders AS 
+SELECT Orders.EmployeeID, Employees.LastName, Orders.OrderID
+FROM Orders
+JOIN Employees
+ON Employees.EmployeeID=Orders.EmployeeID; 
+
+SELECT LastName, COUNT(*)
+FROM Employee_Orders
+GROUP BY LastName
+ORDER BY COUNT(*) desc;
+
+ANSWER: Peacock, 40 
+
+-- c) What product was ordered the most by customers in Germany?
+
+CREATE VIEW Products_Ordered AS
+SELECT Orders.OrderID, Customers.Country, OrderDetails.Quantity, Products.ProductName
+FROM Orders, OrderDetails
+JOIN Customers ON Orders.CustomerID=Customers.CustomerID
+JOIN Products ON OrderDetails.ProductID=Products.ProductID
+WHERE Country='Germany';
+
+CREATE VIEW Product_Orders AS
+SELECT ProductName, Quantity, COUNT(*) as 'Orders'
+FROM Products_Ordered
+GROUP BY ProductName;
+
+SELECT ProductName, Quantity, Orders, (Quantity * Orders) AS TotalOrdered
+FROM Product_Orders
+ORDER BY TotalOrdered desc
+LIMIT 1;
+
+Answer:  
+
+ProductName - Camembert Pierrot
+Quantity - 40 
+Orders - 300
+TotalOrdered - 12000
+© 2022 GitHub, Inc.
+Terms
+Privacy
+Security
+Status
+Docs
+Contact GitHub
+Pricing
+API
+Training
+Blog
+About
